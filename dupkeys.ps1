@@ -4,13 +4,13 @@ Add-Type -AssemblyName System.Web
 # === CONFIGURATION ===
 $Username = "root"
 $Password = "root"
-$ServerUrl = "http://10.1.10.163"
+$ServerUrl = "http://localhost"
 $LocalUrl = "http://localhost"
 $ApiEndpoint = "/server/api/v3/database/query"
 $OutputFile = "DuplicateFiles_Report.csv"
 
 # Search settings
-$SearchDirectory = "/GRU-WS Aggregator-Collector/Shares/10.1.10.163/data/DriveX/Text/Data/Science/"
+$SearchDirectory = "/MC-Legion Aggregator-Collector/File System/C:/Aparavi/Data/Demo/"
 $LimitResults = 100
 
 # Format the directory path for query

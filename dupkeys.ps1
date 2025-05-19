@@ -7,11 +7,13 @@ $Password = "root"
 $ServerUrl = "http://localhost"
 $LocalUrl = "http://localhost"
 $ApiEndpoint = "/server/api/v3/database/query"
-$OutputFile = "DuplicateFiles_Report.csv"
+# Create timestamp for unique filenames
+$Timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
+$OutputFile = "DuplicateFiles_Report_$Timestamp.csv"
 
 # Search settings
 $SearchDirectory = "/MC-Legion Aggregator-Collector/File System/C:/Aparavi/Data/Demo/"
-$LimitResults = 100
+$LimitResults = 10000000
 
 # Format the directory path for query
 $SearchPath = $SearchDirectory.TrimEnd('/') + "/%"

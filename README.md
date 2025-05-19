@@ -19,7 +19,9 @@ $Password = "root"             # Aparavi API password
 $ServerUrl = "http://localhost" # Aparavi server URL
 $LocalUrl = "http://localhost"  # Local URL for API access
 $ApiEndpoint = "/server/api/v3/database/query" # API endpoint path
-$OutputFile = "DuplicateFiles_Report.csv"    # Output report filename
+# Create timestamp for unique filenames
+$Timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
+$OutputFile = "DuplicateFiles_Report_$Timestamp.csv"    # Output report filename with timestamp
 
 # Search settings
 $SearchDirectory = "/MC-Legion Aggregator-Collector/File System/C:/Aparavi/Data/Demo/" # Directory to search
@@ -85,5 +87,6 @@ Each group of files with the same duplicate key (hash) represents files with ide
 ## Notes
 
 - The CSV output files are added to `.gitignore` to prevent them from being tracked in version control
+- Each run creates a uniquely timestamped output file (e.g., `DuplicateFiles_Report_20250519-183446.csv`) to prevent overwriting previous reports
 - You can adjust the `$LimitResults` parameter to control how many duplicate groups are processed
 - The script includes progress indicators and error handling for each duplicate key group

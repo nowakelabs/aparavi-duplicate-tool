@@ -10,6 +10,10 @@ $ApiEndpoint = "/server/api/v3/database/query"
 # Create timestamp for unique filenames
 $Timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $OutputFile = "DuplicateFiles_Report_$Timestamp.csv"
+# Cleanup parameters
+$CleanupDuplicates = $false  # Set to $true to delete duplicate files and create breadcrumbs
+$BreadcrumbExtension = ".breadcrumb.txt"  # Extension for breadcrumb files
+$DeletionLogFile = "DuplicateFiles_Deletions_$Timestamp.log" # Log file for tracking deletions
 
 # Search settings
 $SearchDirectory = "/MC-Legion Aggregator-Collector/File System/C:/Aparavi/Data/Demo/"
@@ -93,7 +97,7 @@ LIMIT 25000
     # Query for all instances of this duplicate key
     $QueryEncoded = [System.Web.HttpUtility]::UrlEncode($Query2)
     $Url2 = "$LocalUrl$ApiEndpoint" + "?select=$QueryEncoded&options=$OptionsEncoded"
-    # Write-Host "Detail URL: $Url2"
+    # Write-Host "Detail URL: $Url2"  # Removed from logs
     
     try {
         $DupFilesCSV = Invoke-RestMethod -Uri $Url2 -Headers $Headers -Method GET
@@ -105,6 +109,51 @@ LIMIT 25000
         # Add to the results file
         foreach ($File in $DupFiles) {
             "$($File.name),$DuplicateCount,$($File.parentPath),$($File.dupKey)" | Out-File -FilePath $OutputFile -Append
+        }
+
+        # Handle duplicate file cleanup if enabled
+        if ($CleanupDuplicates -and $DuplicateCount -gt 1) {
+            # Find files in the original search directory
+            $OriginalFolder = $SearchDirectory.TrimEnd('/')
+            $OriginalFile = $DupFiles | Where-Object { $_.parentPath.StartsWith($OriginalFolder) } | Select-Object -First 1
+            
+            # If no file in the original directory is found, use the first file as the original
+            if ($null -eq $OriginalFile) {
+                $OriginalFile = $DupFiles[0]
+                Write-Host "No file found in original directory. Using first file as original: $($OriginalFile.parentPath)$($OriginalFile.name)" -ForegroundColor Yellow
+            }
+            
+            $OriginalPath = "$($OriginalFile.parentPath)$($OriginalFile.name)"
+            Write-Host "Original file: $OriginalPath" -ForegroundColor Green
+            
+            # Delete duplicates and create breadcrumb files
+            foreach ($File in $DupFiles) {
+                # Skip the original file
+                if ($File.parentPath + $File.name -eq $OriginalFile.parentPath + $OriginalFile.name) {
+                    continue
+                }
+                
+                $FullPath = "$($File.parentPath)$($File.name)"
+                $BreadcrumbPath = "$($File.parentPath)$($File.name)$BreadcrumbExtension"
+                
+                Write-Host "Deleting duplicate: $FullPath" -ForegroundColor Yellow
+                
+                # Create breadcrumb file
+                $BreadcrumbContent = @"
+This is a breadcrumb file indicating that a duplicate file was removed.
+Original file: $OriginalPath
+Duplicate file that was here: $FullPath
+Duplicate key: $($File.dupKey)
+Removed on: $(Get-Date)
+"@
+                $BreadcrumbContent | Out-File -FilePath $BreadcrumbPath -Force
+                
+                # Log the deletion
+                "$(Get-Date) - DELETED: $FullPath - ORIGINAL: $OriginalPath - BREADCRUMB: $BreadcrumbPath" | Out-File -FilePath $DeletionLogFile -Append
+                
+                # Actually delete the file (commented out for safety - uncomment when ready)
+                # Remove-Item -Path $FullPath -Force
+            }
         }
         
         Write-Host "Processed duplicate key: $($DupKey.Substring(0, [Math]::Min(20, $DupKey.Length)))... ($($DupFiles.Count) duplicates)"

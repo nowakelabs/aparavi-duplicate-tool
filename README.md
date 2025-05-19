@@ -26,6 +26,11 @@ $OutputFile = "DuplicateFiles_Report_$Timestamp.csv"    # Output report filename
 # Search settings
 $SearchDirectory = "/MC-Legion Aggregator-Collector/File System/C:/Aparavi/Data/Demo/" # Directory to search
 $LimitResults = 100           # Limit the number of duplicate key groups to process
+
+# Cleanup parameters
+$CleanupDuplicates = $false    # Set to $true to delete duplicate files and create breadcrumbs
+$BreadcrumbExtension = ".breadcrumb.txt"  # Extension for breadcrumb files
+$DeletionLogFile = "DuplicateFiles_Deletions_$Timestamp.log" # Log file for tracking deletions
 ```
 
 Update these values to match your Aparavi environment before running the script.
@@ -39,6 +44,18 @@ The script operates in two main steps:
 2. **Get File Details**: For each unique duplicate key found, it queries the API again to retrieve detailed information about all files sharing that key.
 
 3. **Export Report**: Exports a timestamped CSV report containing file names, duplicate counts, parent paths, and duplicate keys for all identified duplicate files.
+
+The script includes an optional duplicate cleanup feature that can:
+
+1. Identify the "original" file from each duplicate group (files in the main search directory are considered originals)
+2. Remove duplicate files from other locations
+3. Create breadcrumb text files in place of removed duplicates that point to the original file
+4. Log all deletions to a timestamped log file for auditing purposes
+
+To enable this feature:
+
+1. Set `$CleanupDuplicates = $true` in the script
+2. If needed, customize the `$BreadcrumbExtension` for the breadcrumb files
 
 ## Key Features
 
@@ -66,6 +83,18 @@ The output CSV file contains the following columns:
 - **Duplicate Count**: Number of duplicates for this file
 - **Parent Path**: Directory path where the file is located
 - **Duplicate Key**: Aparavi's internal duplicate key that identifies identical content
+
+When duplicate files are removed, a breadcrumb text file is created in their place with:
+- Path to the original file
+- Name and path of the removed duplicate
+- The duplicate key (hash) that identified them as duplicates
+- Timestamp of when the file was removed
+
+Additionally, all deletions are logged to a timestamped log file (`DuplicateFiles_Deletions_[timestamp].log`) with detailed information about:
+- When the deletion occurred
+- Which file was deleted
+- Path to the original file that was kept
+- Where the breadcrumb file was created
 
 ### Example Output
 
@@ -96,5 +125,9 @@ Each group of files with the same duplicate key (hash) represents files with ide
 - The CSV output files are added to `.gitignore` to prevent them from being tracked in version control
 - Each run creates a uniquely timestamped output file (e.g., `DuplicateFiles_Report_20250519-183446.csv`) to prevent overwriting previous reports
 - Duplicate filtering ensures each unique file content hash (dupKey) is processed only once
+- The duplicate cleanup feature is disabled by default and requires manual activation
+- Files in the main search directory are considered "originals" and won't be deleted
+- All deletions are logged to a timestamped log file for auditing and tracking
+- Always make backups before enabling the cleanup feature to delete duplicate files
 - You can adjust the `$LimitResults` parameter to control how many duplicate groups are processed
 - The script includes progress indicators and error handling for each duplicate key group

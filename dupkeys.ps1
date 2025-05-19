@@ -48,16 +48,28 @@ $DupKeysCSV = Invoke-RestMethod -Uri $Url1 -Headers $Headers -Method GET
 
 # Parse the CSV to get duplicate keys
 $DupKeys = ConvertFrom-Csv -InputObject $DupKeysCSV
-Write-Host "Found $(($DupKeys | Measure-Object).Count) duplicate file groups."
+
+# Filter to ensure unique dupKeys only
+$UniqueKeys = @{}
+$UniqueDupKeys = @()
+foreach ($DupKeyObj in $DupKeys) {
+    $DupKey = $DupKeyObj.dupKey
+    if (-not [string]::IsNullOrWhiteSpace($DupKey) -and -not $UniqueKeys.ContainsKey($DupKey)) {
+        $UniqueKeys[$DupKey] = $true
+        $UniqueDupKeys += $DupKeyObj
+    }
+}
+
+Write-Host "Found $(($DupKeys | Measure-Object).Count) total duplicate keys, filtered to $(($UniqueDupKeys | Measure-Object).Count) unique keys."
 
 # Create a file to store the final results
 "File Name,Duplicate Count,Parent Path,Duplicate Key" | Out-File -FilePath $OutputFile
 
 # === STEP 2: For each duplicate key, find all instances ===
 $Counter = 0
-$Total = ($DupKeys | Measure-Object).Count
+$Total = ($UniqueDupKeys | Measure-Object).Count
 
-foreach ($DupKeyObj in $DupKeys) {
+foreach ($DupKeyObj in $UniqueDupKeys) {
     $Counter++
     $DupKey = $DupKeyObj.dupKey
     
@@ -81,7 +93,7 @@ LIMIT 25000
     # Query for all instances of this duplicate key
     $QueryEncoded = [System.Web.HttpUtility]::UrlEncode($Query2)
     $Url2 = "$LocalUrl$ApiEndpoint" + "?select=$QueryEncoded&options=$OptionsEncoded"
-    Write-Host "Detail URL: $Url2"
+    # Write-Host "Detail URL: $Url2"
     
     try {
         $DupFilesCSV = Invoke-RestMethod -Uri $Url2 -Headers $Headers -Method GET

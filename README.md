@@ -28,9 +28,15 @@ $SearchDirectory = "/MC-Legion Aggregator-Collector/File System/C:/Aparavi/Data/
 $LimitResults = 100           # Limit the number of duplicate key groups to process
 
 # Cleanup parameters
-$CleanupDuplicates = $false    # Set to $true to delete duplicate files and create breadcrumbs
 $BreadcrumbExtension = ".breadcrumb.txt"  # Extension for breadcrumb files
 $DeletionLogFile = "DuplicateFiles_Deletions_$Timestamp.log" # Log file for tracking deletions
+
+# Script Versions
+- **dupkeys.ps1**: Main script. Generates a duplicate file report and, if the `-Delete` parameter is provided, prompts for confirmation and then deletes duplicate files and leaves breadcrumb files.
+- **dupkeysafe.ps1**: Safe script. Only generates the duplicate file report. No files are deleted and no breadcrumbs are created.
+
+# Script Parameters (dupkeys.ps1)
+- `-Delete` (optional): If provided, the script will prompt for confirmation and, if confirmed, will delete duplicate files and leave breadcrumbs. If not provided, the script only generates the report.
 ```
 
 Update these values to match your Aparavi environment before running the script.
@@ -66,14 +72,33 @@ To enable this feature:
 
 ## Usage
 
-1. Configure the script parameters as needed
-2. Run the script in PowerShell:
+### Generate a Report (No Deletions)
+
+To generate a CSV report of duplicate files **without deleting anything**, you can use either script:
 
 ```
 .\dupkeys.ps1
 ```
+OR
+```
+.\dupkeysafe.ps1
+```
 
-3. The script will generate a CSV report with the duplicate files information
+### Delete Duplicates and Leave Breadcrumbs (Main Script Only)
+
+To delete duplicate files and leave breadcrumbs (with confirmation prompt):
+
+```
+.\dupkeys.ps1 -Delete
+```
+
+- The script will prompt you to confirm before deleting any files.
+- If you confirm, it will delete duplicates and leave breadcrumb files.
+- If you do not confirm, it will only generate the report.
+
+### Safe Mode
+
+If you want to ensure **no files are ever deleted**, use `dupkeysafe.ps1`. This script has all deletion and breadcrumb logic removed and is safe for reporting only.
 
 ## Output Format
 

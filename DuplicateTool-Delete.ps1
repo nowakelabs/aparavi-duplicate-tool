@@ -164,7 +164,7 @@ Removed on: $(Get-Date)
                 "$(Get-Date) - DELETED: $SanitizedLocalPath - ORIGINAL: $OriginalPath - BREADCRUMB: $BreadcrumbPath" | Out-File -FilePath $DeletionLogFile -Append
 
                 # Actually delete the file (commented out for safety - uncomment when ready)
-                # Remove-Item -Path $SanitizedLocalPath -Force
+                Remove-Item -Path $SanitizedLocalPath -Force
             }
         }
         

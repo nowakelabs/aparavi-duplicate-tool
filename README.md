@@ -32,10 +32,10 @@ $BreadcrumbExtension = ".breadcrumb.txt"  # Extension for breadcrumb files
 $DeletionLogFile = "DuplicateFiles_Deletions_$Timestamp.log" # Log file for tracking deletions
 
 # Script Versions
-- **dupkeys.ps1**: Main script. Generates a duplicate file report and, if the `-Delete` parameter is provided, prompts for confirmation and then deletes duplicate files and leaves breadcrumb files.
-- **dupkeysafe.ps1**: Safe script. Only generates the duplicate file report. No files are deleted and no breadcrumbs are created.
+- **DuplicateTool-Delete.ps1**: Main script. Generates a duplicate file report and, if the `-Delete` parameter is provided, prompts for confirmation and then deletes duplicate files and leaves breadcrumb files.
+- **DuplicateTool.ps1**: Safe script. Only generates the duplicate file report. No files are deleted and no breadcrumbs are created.
 
-# Script Parameters (dupkeys.ps1)
+# Script Parameters (DuplicateTool-Delete.ps1)
 - `-Delete` (optional): If provided, the script will prompt for confirmation and, if confirmed, will delete duplicate files and leave breadcrumbs. If not provided, the script only generates the report.
 ```
 
@@ -74,22 +74,18 @@ To enable this feature:
 
 ### Generate a Report (No Deletions)
 
-To generate a CSV report of duplicate files **without deleting anything**, you can use either script:
+To generate a CSV report of duplicate files **without deleting anything**, use the safe script:
 
 ```
-.\dupkeys.ps1
-```
-OR
-```
-.\dupkeysafe.ps1
+.\DuplicateTool.ps1
 ```
 
 ### Delete Duplicates and Leave Breadcrumbs (Main Script Only)
 
-To delete duplicate files and leave breadcrumbs (with confirmation prompt):
+To delete duplicate files and leave breadcrumbs (with confirmation prompt), use:
 
 ```
-.\dupkeys.ps1 -Delete
+.\DuplicateTool-Delete.ps1 -Delete
 ```
 
 - The script will prompt you to confirm before deleting any files.
@@ -98,7 +94,7 @@ To delete duplicate files and leave breadcrumbs (with confirmation prompt):
 
 ### Safe Mode
 
-If you want to ensure **no files are ever deleted**, use `dupkeysafe.ps1`. This script has all deletion and breadcrumb logic removed and is safe for reporting only.
+If you want to ensure **no files are ever deleted**, use `DuplicateTool.ps1`. This script has all deletion and breadcrumb logic removed and is safe for reporting only.
 
 ## Output Format
 

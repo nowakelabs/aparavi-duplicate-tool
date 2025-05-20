@@ -29,7 +29,7 @@ if ($Delete) {
 
 # Search settings
 $SearchDirectory = "/MC-Legion Aggregator-Collector/File System/C:/Aparavi/Data/Demo/"
-$LimitResults = 100
+$LimitResults = 10 
 
 # Format the directory path for query
 $SearchPath = $SearchDirectory.TrimEnd('/') + "/%"
@@ -144,27 +144,27 @@ LIMIT 25000
                 if ($File.parentPath + $File.name -eq $OriginalFile.parentPath + $OriginalFile.name) {
                     continue
                 }
-                
-                $FullPath = "$($File.parentPath)$($File.name)"
-                $BreadcrumbPath = "$($File.parentPath)$($File.name)$BreadcrumbExtension"
-                
-                Write-Host "Deleting duplicate: $FullPath" -ForegroundColor Yellow
-                
+
+                $SanitizedLocalPath = $File.localPath -replace "^File System/", ""
+                $BreadcrumbPath = "$SanitizedLocalPath$BreadcrumbExtension"
+
+                Write-Host "Deleting duplicate: $SanitizedLocalPath" -ForegroundColor Yellow
+
                 # Create breadcrumb file
                 $BreadcrumbContent = @"
 This is a breadcrumb file indicating that a duplicate file was removed.
 Original file: $OriginalPath
-Duplicate file that was here: $FullPath
+Duplicate file that was here: $SanitizedLocalPath
 Duplicate key: $($File.dupKey)
 Removed on: $(Get-Date)
 "@
                 $BreadcrumbContent | Out-File -FilePath $BreadcrumbPath -Force
-                
+
                 # Log the deletion
-                "$(Get-Date) - DELETED: $FullPath - ORIGINAL: $OriginalPath - BREADCRUMB: $BreadcrumbPath" | Out-File -FilePath $DeletionLogFile -Append
-                
+                "$(Get-Date) - DELETED: $SanitizedLocalPath - ORIGINAL: $OriginalPath - BREADCRUMB: $BreadcrumbPath" | Out-File -FilePath $DeletionLogFile -Append
+
                 # Actually delete the file (commented out for safety - uncomment when ready)
-                # Remove-Item -Path $FullPath -Force
+                # Remove-Item -Path $SanitizedLocalPath -Force
             }
         }
         

@@ -92,6 +92,8 @@ To delete duplicate files and leave breadcrumbs (with confirmation prompt), use:
 - If you confirm, it will delete duplicates and leave breadcrumb files.
 - If you do not confirm, it will only generate the report.
 
+**Warning:** When using `DuplicateTool-Delete.ps1 -Delete` and confirming, duplicate files will be permanently deleted and breadcrumb files will be created in their place. Make sure you have backups or are certain before confirming the prompt.
+
 ### Safe Mode
 
 If you want to ensure **no files are ever deleted**, use `DuplicateTool.ps1`. This script has all deletion and breadcrumb logic removed and is safe for reporting only.

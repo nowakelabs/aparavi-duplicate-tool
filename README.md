@@ -1,11 +1,15 @@
 # Aparavi Duplicate File Tool
 
+> **⚠️ The Aparavi Data Suite is required for this tool to function.**
+> 
+> Please ensure you have access to an Aparavi environment and that it is running before using this tool.
+
 A PowerShell tool for identifying and reporting duplicate files in Aparavi data management systems. This utility leverages Aparavi's API to find files with identical content (same dupKey) and generate CSV reports for analysis.
 
 ## Requirements
 
 - PowerShell 5.1 or higher
-- Aparavi system with API access
+- **Aparavi Data Suite (with API access) is required**
 - Basic authentication credentials for the Aparavi API
 
 ## Configuration
@@ -73,6 +77,8 @@ To enable this feature:
 ## Usage
 
 ### Generate a Report (No Deletions)
+
+> **Note:** The Aparavi Data Suite must be installed, running, and accessible before executing the script. The tool communicates with your Aparavi environment via its API.
 
 To generate a CSV report of duplicate files **without deleting anything**, use the safe script:
 

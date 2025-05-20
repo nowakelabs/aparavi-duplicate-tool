@@ -14,7 +14,7 @@ A PowerShell tool for identifying and reporting duplicate files in Aparavi data 
 
 ## Configuration
 
-The script uses the following configuration parameters at the top of the `dupkeys.ps1` file:
+The script uses the following configuration parameters at the top of the `DuplicateTool.ps1` file:
 
 ```powershell
 # === CONFIGURATION ===
